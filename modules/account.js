@@ -31,13 +31,32 @@ const createAccount = (email, id, password) => {
   }
 }
 
-const findAccount = (id) => {
+const findAccountWithId = (id) => {
   try {
     const account = localAccountDB.getData(id);
     if(!account){
       throw new Error('Account not found : ' + id);
     }
     
+    return account;
+  } catch (error) {
+    console.error('Failed to find account : ' + id);
+    console.error(error);
+    return undefined;
+  }
+}
+
+const findAccount = (id, password) => {
+  try {
+    const account = localAccountDB.getData(id);
+    if (!account) {
+      throw new Error('Account not found : ' + id);
+    }
+
+    if(account.password !== encryptPassword(password, account.salt)){
+      throw new Error('Password not matched : ' + id);
+    }
+
     return account;
   } catch (error) {
     console.error('Failed to find account : ' + id);
@@ -97,4 +116,5 @@ module.exports = {
   findAccount,
   deleteAccount,
   changePassword,
+  findAccountWithId,
 }
